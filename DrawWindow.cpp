@@ -64,6 +64,7 @@ void DrawWindow::clearScene() {
 void DrawWindow::calculateViewAngle(){
 
     MyMath::calculateViewAngle(viewPos, viewAngle[0], viewAngle[1], viewAngle[2]);
+    //qDebug() << viewAngle[0]<< viewAngle[1]<< viewAngle[2];
 }
 
 
@@ -94,8 +95,8 @@ void DrawWindow::rotateFigures() {
         figure->matrixTransform(Matrix::rotateZ(viewAngle[2] - lastViewAngle[2]));
 
 
-        /*qDebug() << viewPos[0] << viewPos[1] << viewPos[2];
-        qDebug() <<"angle"<< viewAngle[0] << viewAngle[1];*/
+        qDebug() << viewPos[0] << viewPos[1] << viewPos[2];
+        qDebug() <<"angle"<< viewAngle[0] << viewAngle[1]<< viewAngle[2];
 
         figure->addPointToDisplay(viewCenter);
 
@@ -133,7 +134,13 @@ void DrawWindow::initialrotateFigure(Figure* figure) {
 
 void DrawWindow::drawScene() {
 
-    for (Figure* figure : figuresAtScene) figure->draw(*scene);
+    for (Figure* figure : figuresAtScene) { 
+        if (typeid(*figure) == typeid(Rectangle)) {
+            figure->drawRec(*scene, viewPos);
+            break;
+        }
+        else figure->draw(*scene); 
+    }
 
 }
 
@@ -230,6 +237,7 @@ void DrawWindow::mouseMove_slot(QMouseEvent* event) {
     clearScene();
     horizontalCircleMove(-(double)posX / 100);
     verticalCircleMove((double)posY / 100);
+    //qDebug() << viewPos[0] << viewPos[1] << viewPos[2];
     rotateFigures();
     drawScene();
     mousePos = event->localPos();

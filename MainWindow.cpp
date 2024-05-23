@@ -1,5 +1,9 @@
 ﻿#include "MainWindow.h"
 #include "Rectangle.h"
+#include <QRandomGenerator>
+#include <QDateTime>
+#include <QCheckBox>
+	
 
 
 MainWindow::MainWindow(QWidget* parent)
@@ -12,34 +16,45 @@ MainWindow::MainWindow(QWidget* parent)
     double height = size.height();
     ui.drawWindow->viewCenter = { width / 2.0, height / 2.0, 0,1 };
 
+  /*  Rectangle* center = new Rectangle(-100, -100, -100, 200, 200, 200, ui.drawWindow->viewCenter);
+    ui.drawWindow->addFigure(center);*/
 
-    Rectangle* center = new Rectangle(0, 0, 0, 100, 100, 100, ui.drawWindow->viewCenter);
-    ui.drawWindow->addFigure(center);
+    QRandomGenerator rg(QDateTime::currentSecsSinceEpoch());
 
     std::vector<std::vector<double>> points;
-    points.push_back({ -50,50,20 });
-    points.push_back({ 30,30,30 });
-    points.push_back({ 50,50,35 });
-    points.push_back({ 100,59,-35 });
-    points.push_back({ 150,150 ,150 });
-    points.push_back({ 200,200 ,200 });
+
+    for (int _ =0; _<2;++_){
+        std::vector<double> pointA;
+        std::vector<double> pointB;
+        for (int __ = 0; __ < 3; ++__) {
+            pointA.emplace_back(rg.bounded(-300, 300));
+            pointB.emplace_back(rg.bounded(-100, 100));
+        }
+
+        points.emplace_back(pointA);
+        points.emplace_back(pointB);
+    }
 
 
-    Segments* segs = new Segments(points, ui.drawWindow->viewCenter);
-    ui.drawWindow->addFigure(segs);
 
-    segs->CutPoints(*center, ui.drawWindow->viewCenter);
+
+    //segs = new Segments(points, ui.drawWindow->viewCenter);
+    //ui.drawWindow->addFigure(segs);
+
+
+
+    //segs->CutPoints(*center, ui.drawWindow->viewCenter);
+    //connect(ui.showCutted, &QCheckBox::stateChanged, this, &MainWindow::showCutPoints_slot);
+
 
    
 
-   
+    auto bezieIndex = ui.drawWindow->addFigure(new BezieCurve(points, ui.drawWindow->viewCenter, 0.05));
 
-    //auto bezieIndex = ui.drawWindow->addFigure(new BezieCurve(points, ui.drawWindow->viewCenter, 0.05));
-
-   /* ui.bezieController->setObjN(bezieIndex);
+    ui.bezieController->setObjN(bezieIndex);
 
     for (int i = 0; i < points.size(); ++i)
-        ui.bezieController->addPoint(points[i], i);*/
+        ui.bezieController->addPoint(points[i], i);
 
 
 
@@ -59,11 +74,11 @@ MainWindow::MainWindow(QWidget* parent)
     ui.drawWindow->rotateFigures();
     ui.drawWindow->drawScene();
 
-    connect(ui.bezieController, &Controller::pointChanged_signal, ui.drawWindow, &DrawWindow::objPointChanged_slot);
+    //connect(ui.bezieController, &Controller::pointChanged_signal, ui.drawWindow, &DrawWindow::objPointChanged_slot);
 
     
 
-    segs->showCut(true);
+   
 
 }
 

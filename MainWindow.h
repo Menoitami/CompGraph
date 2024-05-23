@@ -15,7 +15,16 @@ public:
 	MainWindow(QWidget *parent = nullptr);
 	~MainWindow();
 
+public slots:
+	void showCutPoints_slot(int state) {
+		segs->showCut(bool(state));
+		ui.drawWindow->clearScene();
+		ui.drawWindow->drawScene();
+	}
+
+
 
 private:
 	Ui::MainWindow ui;
+	Segments* segs;
 };

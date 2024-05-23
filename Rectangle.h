@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <vector>
 #include <qgraphicsview.h>
@@ -18,6 +18,7 @@ public:
 	void setDefaultDisplayPoints();
 
 	virtual void draw(QGraphicsScene& scene) = 0;
+	virtual void drawRec(QGraphicsScene& scene, std::vector<double> viewPos) = 0;
 	virtual void calcPoints() = 0;
 
 	virtual void changePoint(size_t pointN, std::vector<double> values) {
@@ -34,6 +35,8 @@ protected:
 	void addSceneDot(int x, int y,int size, QGraphicsScene& scene);
 
 
+
+
 };
 
 
@@ -46,9 +49,22 @@ public:
 	void calcPoints()  override {
 	}
 	void draw(QGraphicsScene& scene) override;
+	std::vector<std::vector<double>> normales;
+	std::vector<double> roberts(int faceId);
+	void drawRec(QGraphicsScene& scene, std::vector<double> viewPos) override;
 
 private:
-	void fillPoints(int x, int y, int z, int width, int height, int deep, std::vector<double> scalar);
+	void fillPoints(double x, double y, double z, double width, double height, double deep, std::vector<double> scalar);
+
+	// Определение граней по вершинам
+	std::vector<std::vector<int>> faceIndices = {
+		{0, 3, 2, 1}, // Передняя грань
+		{4, 5, 6, 7}, // Задняя грань
+		{0, 3, 7, 4}, // Левая грань
+		{1, 2, 6, 5}, // Правая грань
+		{3, 2, 6, 7}, // Верхняя грань
+		{0, 1, 5, 4}  // Нижняя грань
+	};
 
 };
 
@@ -73,6 +89,7 @@ public:
 		displaypoints.clear();
 		calcPoints();
 	}
+	void drawRec(QGraphicsScene& scene, std::vector<double> viewPos) override {};
 
 	void matrixTransform(const Vector2D<double>& rotateMatrix) override;
 	void addPointToDisplay(std::vector<double> scalar) override;
@@ -123,6 +140,7 @@ public:
 	void addPointToDisplay(std::vector<double> scalar) override;
 	void reducePointToDisplay(std::vector<double> scalar) override;
 	void showCut(bool a);
+
 
 private:
 

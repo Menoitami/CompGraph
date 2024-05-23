@@ -7,6 +7,25 @@
 #include "Area.h"
 
 namespace myMath {
+
+	struct Vector3 {
+		double x, y, z;
+
+		Vector3 operator-(const Vector3& v) const {
+			return { x - v.x, y - v.y, z - v.z };
+		}
+
+		Vector3 cross(const Vector3& v) const {
+			return { y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x };
+		}
+
+		Vector3 normalize() const {
+			double len = std::sqrt(x * x + y * y + z * z);
+			return { x / len, y / len, z / len };
+		}
+	};
+
+
 	template <class T>
 	using Vector2D = std::vector<std::vector<T>>;
 

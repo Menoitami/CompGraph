@@ -54,6 +54,8 @@ public:
 
 public:
     std::vector<double> viewCenter = { 300, 300, 0, 1 };
+   
+
 
 public slots:
     void mouseMove_slot(QMouseEvent* event);
@@ -66,14 +68,14 @@ public slots:
         initialrotateFigure(figuresAtScene[objN]);
         drawScene();
     }
-
+    
 private:
     std::vector<Figure*> figuresAtScene;
-
+    double viewAngle[3] = { 0, 0, 0 };// vertical, horizontal
     
-    double viewAngle[3] = { 0, 0, 0 }; // vertical, horizontal
+    
     double lastViewAngle[3] = { 0,0, 0 };
-    std::vector<double> viewPos = { 100,0, -100, 1 };
+    std::vector<double> viewPos = { 0,0, -100, 1 };
     double kf = 1;
 
     QPointF mousePos = QPoint(0, 0);

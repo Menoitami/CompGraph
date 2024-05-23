@@ -79,29 +79,23 @@ Rectangle::Rectangle(int x, int y,int z, int width, int height, int deep,std::ve
 }
 
 
-void Rectangle::fillPoints(int x, int y,int z, int width, int height, int deep, std::vector<double> scalar) {
-
+void Rectangle::fillPoints(double x, double y, double z, double width, double height, double deep, std::vector<double> scalar) {
     points.resize(8);
-    displaypoints.resize(8);
     for (int i = 0; i < 8; ++i) {
         points[i].resize(4);
-        displaypoints[i].resize(4);
     }
 
-
-    points[0][0] = x;        points[0][1] = y;        points[0][2] = z;        points[0][3] = 1;
-    points[1][0] = x + width; points[1][1] = y;        points[1][2] = z;        points[1][3] = 1;
-    points[2][0] = x + width; points[2][1] = y + height; points[2][2] = z;        points[2][3] = 1;
-    points[3][0] = x;        points[3][1] = y + height; points[3][2] = z;        points[3][3] = 1;
-    points[4][0] = x;        points[4][1] = y;        points[4][2] = z+deep;     points[4][3] = 1;
-    points[5][0] = x + width; points[5][1] = y;        points[5][2] = z+deep;     points[5][3] = 1;
-    points[6][0] = x + width; points[6][1] = y + height; points[6][2] = z+deep;     points[6][3] = 1;
-    points[7][0] = x;        points[7][1] = y + height; points[7][2] = z+deep;     points[7][3] = 1;
-
+    points[0] = { x,        y,        z,        1 };
+    points[1] = { x + width, y,        z,        1 };
+    points[2] = { x + width, y + height, z,        1 };
+    points[3] = { x,        y + height, z,        1 };
+    points[4] = { x,        y,        z + deep, 1 };
+    points[5] = { x + width, y,        z + deep, 1 };
+    points[6] = { x + width, y + height, z + deep, 1 };
+    points[7] = { x,        y + height, z + deep, 1 };
+    
     setDefaultDisplayPoints();
-
 }
-
 
 
 void Rectangle::draw(QGraphicsScene& scene) {
@@ -127,10 +121,66 @@ void Rectangle::draw(QGraphicsScene& scene) {
 
     }
 
+}
+
+
+void Rectangle::drawRec(QGraphicsScene& scene, std::vector<double> viewPos) {
+
+    for (int i = 0; i < faceIndices.size();++i) {
+
+        std::vector<double> koefs = roberts(i);
+        double form = (koefs[0] * -viewPos[0] + koefs[1] * viewPos[1] + koefs[2] * viewPos[2] + koefs[3]);
+        if (form > 0) {
+
+            const std::vector<int>& face = faceIndices[i];
+            for (size_t j = 0; j < face.size(); ++j) {
+                int current = face[j];
+                int next = face[(j + 1) % face.size()];
+                addSceneLine(displaypoints[current][0], displaypoints[current][1],
+                    displaypoints[next][0], displaypoints[next][1], scene);
+            }
+
+        }
+        
+
+    }
 
 
 
+}
 
+std::vector<double> Rectangle::roberts(int faceId) {
+  
+    std::vector<int> face = faceIndices[faceId];
+    Vector3 p0 = { points[face[0]][0], points[face[0]][1], points[face[0]][2] };
+    Vector3 p1 = { points[face[1]][0], points[face[1]][1], points[face[1]][2] };
+    Vector3 p2 = { points[face[2]][0], points[face[2]][1], points[face[2]][2] };
+
+    Vector3 v1 = p1 - p0;
+    Vector3 v2 = p2 - p0;
+    double A = v1.y * v2.z - v2.y * v1.z;
+    double B = v1.z * v2.x - v2.z * v1.x;
+    double C = v1.x * v2.y - v2.x * v1.y;
+    double D = -(A * v1.x + B * v1.y + C * v1.z);
+
+    Vector3 W = { 0, 0, 0 };
+    for (int i = 0; i < 4; ++i) {
+        W.x += points[face[i]][0];
+        W.y += points[face[i]][1];
+        W.z += points[face[i]][2];
+    }
+    W.x /= 4;
+    W.y /= 4;
+    W.z /= 4;
+
+    double m = (A*W.x + B*W.y + C*W.z + D) > 0? -1:1;
+
+    A *= m;
+    B *= m;
+    C *= m;
+    D *= m;
+
+    return std::vector<double>{A, B, C, D};
 }
 
 

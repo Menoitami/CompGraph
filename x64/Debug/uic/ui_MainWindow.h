@@ -11,6 +11,7 @@
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QCheckBox>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QStatusBar>
@@ -27,6 +28,7 @@ public:
     QWidget *centralWidget;
     DrawWindow *drawWindow;
     Controller *bezieController;
+    QCheckBox *showCutted;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -43,7 +45,14 @@ public:
         drawWindow->setGeometry(QRect(50, 30, 591, 531));
         bezieController = new Controller(centralWidget);
         bezieController->setObjectName(QString::fromUtf8("bezieController"));
-        bezieController->setGeometry(QRect(700, 50, 561, 491));
+        bezieController->setGeometry(QRect(700, 210, 561, 331));
+        showCutted = new QCheckBox(centralWidget);
+        showCutted->setObjectName(QString::fromUtf8("showCutted"));
+        showCutted->setGeometry(QRect(680, 40, 301, 51));
+        QFont font;
+        font.setPointSize(20);
+        showCutted->setFont(font);
+        showCutted->setIconSize(QSize(32, 32));
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
@@ -64,6 +73,7 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QCoreApplication::translate("MainWindow", "MainWindow", nullptr));
+        showCutted->setText(QCoreApplication::translate("MainWindow", "Cut segments", nullptr));
     } // retranslateUi
 
 };
